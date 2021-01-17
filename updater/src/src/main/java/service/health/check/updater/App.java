@@ -13,10 +13,14 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import service.health.check.messages.AddressToCheck;
 import service.health.check.messages.CheckedAddress;
 import service.health.check.messages.Config;
+import service.health.check.models.HibernateUtil;
 
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Root;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
@@ -53,11 +57,22 @@ public class App {
 				new TypeReference<CheckedAddress>() {
 				});
 		logger.info("Updater - Message received: " + messageJson);
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			logger.error("Updater - ERROR: " + e.getMessage());
-		}
+		EntityManager entityManager = HibernateUtil.getEntityManagerFactory()
+				.createEntityManager();
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaUpdate<service.health.check.models.Address> update = cb.createCriteriaUpdate(
+				service.health.check.models.Address.class);
+		Root<service.health.check.models.Address> root = update.from(
+				service.health.check.models.Address.class);
+		update.set(root.get(service.health.check.models.Address_.healthy),
+				checkedAddress.getHealthy());
+		update.where(cb.equal(root.get(service.health.check.models.Address_.host),
+				checkedAddress.getHost()),
+				cb.equal(root.get(service.health.check.models.Address_.port),
+						checkedAddress.getPort()));
+		entityManager.getTransaction().begin();
+		entityManager.createQuery(update).executeUpdate();
+		entityManager.getTransaction().commit();
 		logger.info("Updater - Work done! " + messageJson);
 	}
 

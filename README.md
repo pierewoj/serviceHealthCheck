@@ -1,1 +1,1 @@
-Run `./copy-messages-jar.sh` to copy messages jar. Set up message-broker component at first.
+Run `./copy-messages-models-jars.sh` to copy messages and models jars. Set up message-broker and database component at first, then run database-schema.

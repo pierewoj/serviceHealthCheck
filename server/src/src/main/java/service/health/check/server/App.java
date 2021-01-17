@@ -11,9 +11,16 @@ import org.slf4j.LoggerFactory;
 import service.health.check.messages.AddressToCheck;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import service.health.check.messages.Config;
+import service.health.check.models.HibernateUtil;
+
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 public class App {
 
@@ -21,7 +28,7 @@ public class App {
 	}
 
 	public static void main(String[] args)
-			throws IOException, TimeoutException, InterruptedException {
+			throws IOException, TimeoutException {
 		Logger logger = LoggerFactory.getLogger(App.class);
 		ConnectionFactory factory = new ConnectionFactory();
 		Connection connection = factory.newConnection(Address.parseAddresses(
@@ -30,14 +37,27 @@ public class App {
 
 		channel.queueDeclare(Config.ADDRESSES_TO_CHECK_QUEUE, true, false, false, null);
 
-		AddressToCheck googleAddress = new AddressToCheck("http://google.com", "80");
-		final ObjectMapper mapper = new ObjectMapper();
-		String messageJson = mapper.writeValueAsString(googleAddress);
+		EntityManager entityManager = HibernateUtil.getEntityManagerFactory()
+				.createEntityManager();
 
-		for (int i = 0; i < 10; i++) {
-			channel.basicPublish("", Config.ADDRESSES_TO_CHECK_QUEUE, MessageProperties.PERSISTENT_TEXT_PLAIN, messageJson.getBytes());
+		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<service.health.check.models.Address> criteriaQuery = criteriaBuilder.createQuery(
+				service.health.check.models.Address.class);
+		Root<service.health.check.models.Address> root = criteriaQuery.from(
+				service.health.check.models.Address.class);
+		criteriaQuery.select(root);
+		List<service.health.check.models.Address> addresses = entityManager.createQuery(
+				criteriaQuery).getResultList();
+
+		for (service.health.check.models.Address address : addresses) {
+			AddressToCheck googleAddress = new AddressToCheck(address.getHost(),
+					address.getPort());
+			final ObjectMapper mapper = new ObjectMapper();
+			String messageJson = mapper.writeValueAsString(googleAddress);
+			channel.basicPublish("", Config.ADDRESSES_TO_CHECK_QUEUE,
+					MessageProperties.PERSISTENT_TEXT_PLAIN,
+					messageJson.getBytes());
 			logger.info("Server - Message sent: " + messageJson);
-			Thread.sleep(500);
 		}
 
 		channel.close();
