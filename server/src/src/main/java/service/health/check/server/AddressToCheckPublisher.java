@@ -6,8 +6,6 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.MessageProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import service.health.check.messages.AddressToCheck;
 import service.health.check.messages.Config;
 import service.health.check.models.Address;
