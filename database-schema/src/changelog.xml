@@ -18,4 +18,14 @@
 			</column>
 		</createTable>
 	</changeSet>
+	<changeSet id="2" author="pierewoj">
+		<createTable tableName="servers">
+			<column name="id" type="varchar(256)">
+				<constraints primaryKey="true"/>
+			</column>
+			<column name="last_heartbeat" type="timestamp">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+	</changeSet>
 </databaseChangeLog>
