@@ -3,6 +3,7 @@ package service.health.check.server;
 import com.google.common.util.concurrent.AbstractScheduledService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import service.health.check.models.Address;
 import service.health.check.models.Server;
 
 import java.time.Instant;
@@ -12,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class App {
-	private static final Server CURRENT_SERVER = new Server();
+	private static final Server currentServer = new Server();
 
 	public App() {
 	}
@@ -30,7 +31,7 @@ public class App {
 				Database db = new Database();
 				testServerRegistryLogic(db);
 				AddressToCheckPublisher publisher = new AddressToCheckPublisher();
-				publisher.publishAddressesForChecking(db.getAllAddresses());
+				publisher.publishAddressesForChecking(db.getAll(Address.class));
 			} catch (Exception e) {
 				log.error("Exception thrown during run execution: {}", e.toString());
 			}
@@ -46,12 +47,12 @@ public class App {
 		// TODO: add "garbage-collection" of servers that are inactive for a super long period of time
 		//   to avoid table item count to grow super large
 		private void testServerRegistryLogic(Database db) {
-			CURRENT_SERVER.setLastHeartbeat(Instant.now());
-			db.saveServer(CURRENT_SERVER);
+			currentServer.setLastHeartbeat(Instant.now());
+			db.saveServer(currentServer);
 
-			// servers that didn't perform a heatbreat for 10s are considered as inactive
+			// servers that didn't perform a heartbeat for 10s are considered as inactive
 			Instant maxServerAge = Instant.now().minusSeconds(10);
-			List<Server> servers = db.getAllServers();
+			List<Server> servers = db.getAll(Server.class);
 			List<Server> activeServers = servers.stream()
 					.filter(s -> s.getLastHeartbeat().isAfter(maxServerAge))
 					.collect(Collectors.toList());
@@ -64,7 +65,7 @@ public class App {
 		// Each server should get a different ID; if a duplicate occurs (which is extremely unlikely)
 		// both servers will be doing the same work. This will result in some of the targets getting
 		// checked twice as often until one of the servers is restarted.
-		CURRENT_SERVER.setId(UUID.randomUUID().toString());
+		currentServer.setId(UUID.randomUUID().toString());
 		ScheduledExecutor executor = new ScheduledExecutor(new Database(), new AddressToCheckPublisher());
 		executor.startAsync();
 		executor.awaitTerminated();

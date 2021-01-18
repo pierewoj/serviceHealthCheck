@@ -19,22 +19,10 @@ public class Database {
                 .createEntityManager();
     }
 
-    public List<Address> getAllAddresses() {
+    public <T> List<T> getAll(Class<T> entityClass) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Address> criteriaQuery = criteriaBuilder.createQuery(
-                service.health.check.models.Address.class);
-        Root<Address> root = criteriaQuery.from(
-                service.health.check.models.Address.class);
-        criteriaQuery.select(root);
-        return entityManager.createQuery(criteriaQuery).getResultList();
-    }
-
-    public List<Server> getAllServers() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Server> criteriaQuery = criteriaBuilder.createQuery(
-                service.health.check.models.Server.class);
-        Root<Server> root = criteriaQuery.from(
-                service.health.check.models.Server.class);
+        CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(entityClass);
+        Root<T> root = criteriaQuery.from(entityClass);
         criteriaQuery.select(root);
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
