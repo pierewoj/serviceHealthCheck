@@ -7,18 +7,17 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClients;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import service.health.check.messages.AddressToCheck;
 
 @Slf4j
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddressCheckerUtil {
 
     // constants
     public static final int TIMEOUT = 1000;
-
-    public AddressCheckerUtil() {
-        throw new UnsupportedOperationException("Cannot instantiate Util class!");
-    }
 
     public static RequestConfig getRequestConfig() {
         return RequestConfig.custom()
@@ -46,7 +45,7 @@ public class AddressCheckerUtil {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException | NullPointerException e) {
-            log.warn("Port isn't int: " + value, e);
+            log.warn(String.format("Port isn't int: '%s'", value), e);
             return null;
         }
     }
