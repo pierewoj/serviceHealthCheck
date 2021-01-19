@@ -10,3 +10,4 @@ cp messages/src/target/original-messages-1.0-SNAPSHOT.jar worker/src/jars
 cp messages/src/target/original-messages-1.0-SNAPSHOT.jar updater/src/jars
 cp database-models/src/target/original-database-models-1.0-SNAPSHOT.jar server/src/jars
 cp database-models/src/target/original-database-models-1.0-SNAPSHOT.jar updater/src/jars
+cp database-models/src/target/original-database-models-1.0-SNAPSHOT.jar front/src/jars

@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  app:
+    build:
+      dockerfile: ./Dockerfile
+      context: ./
+    command: /app/start.sh
+    network_mode: host
+    ports:
+      - 8090:8090
