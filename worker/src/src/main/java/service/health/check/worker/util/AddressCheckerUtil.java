@@ -2,6 +2,7 @@ package service.health.check.worker.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -12,20 +13,40 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import service.health.check.messages.AddressToCheck;
 
+import org.springframework.web.client.RestTemplate;
+import service.health.check.models.Config;
+
 @Slf4j
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddressCheckerUtil {
 
-    // constants
-    public static final int TIMEOUT = 1000;
+	// constants
+	public static final int TIMEOUT = 1000;
 
-    public static RequestConfig getRequestConfig() {
-        return RequestConfig.custom()
-                            .setConnectTimeout(TIMEOUT)
-                            .setSocketTimeout(TIMEOUT)
-                            .setConnectionRequestTimeout(TIMEOUT)
-                            .build();
-    }
+	private static final RestTemplate restTemplate = new RestTemplate();
+	private static final String REST_CONFIG_URL = "http://localhost:8090/config/";
+
+	public static RequestConfig getRequestConfig() {
+		return RequestConfig.custom()
+				.setConnectTimeout(Integer.parseInt(Objects.requireNonNull(
+						restTemplate.getForObject(
+								REST_CONFIG_URL +
+										Config.ConfigName.WORKER_CONNECTION_TIMEOUT,
+								Config.class)).getValue()))
+				.setSocketTimeout(Integer.parseInt(Objects.requireNonNull(
+						restTemplate.getForObject(
+								REST_CONFIG_URL +
+										Config.ConfigName.WORKER_SOCKET_TIMEOUT,
+								Config.class)).getValue()))
+				.setConnectionRequestTimeout(
+						Integer.parseInt(Objects.requireNonNull(
+								restTemplate.getForObject(
+										REST_CONFIG_URL +
+												Config.ConfigName.WORKER_CONNECTION_REQUEST_TIMEOUT,
+										Config.class))
+								.getValue()))
+				.build();
+	}
 
     public static HttpClient instantiateHttpClient() {
         return HttpClients.createDefault();

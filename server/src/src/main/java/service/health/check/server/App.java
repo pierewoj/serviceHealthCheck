@@ -8,12 +8,18 @@ import service.health.check.models.Server;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.springframework.web.client.RestTemplate;
+import service.health.check.models.Config;
+
 public class App {
 	private static final Server currentServer = new Server();
+	private static final RestTemplate restTemplate = new RestTemplate();
+	private static final String REST_CONFIG_URL = "http://localhost:8090/config/";
 
 	public App() {
 	}
@@ -51,7 +57,11 @@ public class App {
 			db.saveServer(currentServer);
 
 			// servers that didn't perform a heartbeat for 10s are considered as inactive
-			Instant maxServerAge = Instant.now().minusSeconds(10);
+			Instant maxServerAge = Instant.now().minusSeconds(Integer.parseInt(Objects.requireNonNull(
+					restTemplate.getForObject(
+							REST_CONFIG_URL +
+									Config.ConfigName.SERVER_MAX_INACTIVE_TIME,
+							Config.class)).getValue()));
 			List<Server> servers = db.getAll(Server.class);
 			List<Server> activeServers = servers.stream()
 					.filter(s -> s.getLastHeartbeat().isAfter(maxServerAge))
