@@ -28,4 +28,14 @@
 			</column>
 		</createTable>
 	</changeSet>
+	<changeSet id="3" author="js361014">
+		<createTable tableName="configs">
+			<column name="name" type="varchar(256)">
+				<constraints primaryKey="true"/>
+			</column>
+			<column name="value" type="varchar(256)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+	</changeSet>
 </databaseChangeLog>
