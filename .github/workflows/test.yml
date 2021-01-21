@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create and copy messages and models jars
+        run: ./copy-messages-models-jars.sh           
+      - name: Set up database
+        run: |
+            cd database
+            docker-compose up -d
+            cd ..
+      - name: Install database schema
+        run: |
+            cd database-schema
+            docker-compose up -d
+            cd ..
+      - name: Set up message broker
+        run: |
+            cd message-broker
+            docker-compose up -d
+            cd ..
+      - name: Set up front
+        run: |
+            cd front
+            docker-compose up -d
+            cd ..
+      - name: Set up updater
+        run: |
+            cd updater
+            docker-compose up -d
+            cd ..
+      - name: Set up worker
+        run: |
+            cd worker
+            docker-compose up -d
+            cd ..
+      - name: Set up server
+        run: |
+            cd server
+            docker-compose up -d
+            cd ..                                      
