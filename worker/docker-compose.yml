@@ -5,5 +5,6 @@ services:
     build:
       dockerfile: ./Dockerfile
       context: ./
+      network: host
     command: /app/start.sh
     network_mode: host
