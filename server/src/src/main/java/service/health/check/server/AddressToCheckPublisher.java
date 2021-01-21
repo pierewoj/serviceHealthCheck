@@ -30,7 +30,6 @@ public class AddressToCheckPublisher {
                     channel.basicPublish("", Config.ADDRESSES_TO_CHECK_QUEUE,
                             MessageProperties.PERSISTENT_TEXT_PLAIN,
                             messageJson.getBytes());
-                    log.info("Server - Message sent: " + messageJson);
                 }
             }
         }
