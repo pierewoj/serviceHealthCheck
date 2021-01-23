@@ -8,3 +8,8 @@ services:
       POSTGRES_PASSWORD: test
     ports:
       - 5431:5432
+
+networks:
+  default:
+    external:
+      name: healthcheck-network

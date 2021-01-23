@@ -5,6 +5,9 @@ services:
     build:
       dockerfile: ./Dockerfile
       context: ./
-      network: host
     command: /app/start.sh
-    network_mode: host
+
+networks:
+  default:
+    external:
+      name: healthcheck-network
