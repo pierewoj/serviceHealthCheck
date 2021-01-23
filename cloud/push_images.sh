@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 # extend app list when more apps are supported
-for app in server
+for app in server database-schema
 do
 (
   cd ../"$app"

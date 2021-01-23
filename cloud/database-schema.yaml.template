@@ -1,15 +1,15 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: server
+  name: database-schema
 spec:
   template:
     metadata:
-      name: server-pod
+      name: database-schema
     spec:
       containers:
-        - name: server
-          image: gcr.io/pierewoj-gke/server
+        - name: database-schema
+          image: gcr.io/PROJECT_NAME/database-schema
           command: ["/app/start.sh"]
           imagePullPolicy: Always
-      restartPolicy: OnFailure
+      restartPolicy: Never
