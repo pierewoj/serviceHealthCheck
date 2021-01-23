@@ -7,6 +7,10 @@ do
 done
 
 kubectl apply -f postgres.yaml
+kubectl apply -f rabbit.yaml
 sleep 10s
 kubectl apply -f database-schema.yaml
+sleep 10s
+kubectl apply -f worker.yaml
 kubectl apply -f server.yaml
+kubectl apply -f front.yaml

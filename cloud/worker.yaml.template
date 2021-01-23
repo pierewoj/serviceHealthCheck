@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+          - name: worker
+            image: gcr.io/PROJECT_NAME/worker
+            command: ["/app/start.sh"]
+            imagePullPolicy: Always
