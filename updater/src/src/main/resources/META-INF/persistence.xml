@@ -6,7 +6,7 @@
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" /> <!-- DB Driver -->
-			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5431/postgres" /> <!-- BD Mane -->
+			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://db:5432/postgres" /> <!-- BD Mane -->
 			<property name="javax.persistence.jdbc.user" value="postgres" /> <!-- DB User -->
 			<property name="javax.persistence.jdbc.password" value="test" /> <!-- DB Password -->
 			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL82Dialect"/>

@@ -23,7 +23,7 @@ public class AddressCheckerUtil {
 	// constants
 	public static final int TIMEOUT = 1000;
 
-	public static final String REST_CONFIG_URL = "http://localhost:8090/config/";
+	public static final String REST_CONFIG_URL = "http://front:8090/config/";
 
 	public static RequestConfig getRequestConfig(RestTemplate restTemplate) {
 		return RequestConfig.custom()
