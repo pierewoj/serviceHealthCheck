@@ -23,10 +23,9 @@ public class AddressCheckerUtil {
 	// constants
 	public static final int TIMEOUT = 1000;
 
-	private static final RestTemplate restTemplate = new RestTemplate();
-	private static final String REST_CONFIG_URL = "http://localhost:8090/config/";
+	public static final String REST_CONFIG_URL = "http://localhost:8090/config/";
 
-	public static RequestConfig getRequestConfig() {
+	public static RequestConfig getRequestConfig(RestTemplate restTemplate) {
 		return RequestConfig.custom()
 				.setConnectTimeout(Integer.parseInt(Objects.requireNonNull(
 						restTemplate.getForObject(
