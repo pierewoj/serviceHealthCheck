@@ -3,6 +3,7 @@ package service.health.check.worker;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.springframework.web.client.RestTemplate;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
@@ -13,9 +14,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import service.health.check.messages.AddressToCheck;
 import service.health.check.messages.CheckedAddress;
+import service.health.check.models.Config;
 import service.health.check.worker.util.AddressCheckerUtil;
+import static service.health.check.worker.util.AddressCheckerUtil.REST_CONFIG_URL;
 
 public class AddressCheckerTest {
 
@@ -23,6 +29,7 @@ public class AddressCheckerTest {
     private static final Integer PORT = 8089;
     private static final String PORT_TEXT = PORT.toString();
     private static final String HOST = "http://localhost";
+    private static final String TIMEOUT = "1000";
 
     // dependencies
     private AddressChecker addressChecker;
@@ -32,7 +39,8 @@ public class AddressCheckerTest {
 
     @Before
     public void setup() {
-        this.addressChecker = new AddressChecker();
+        RestTemplate restTemplate = mockRestTemplate();
+        this.addressChecker = new AddressChecker(restTemplate);
     }
 
     @Test
@@ -85,5 +93,19 @@ public class AddressCheckerTest {
         assertThat(checkedAddress.getHost()).isEqualTo(testUrl);
         assertThat(checkedAddress.getPort()).isEqualTo(PORT_TEXT);
         assertThat(checkedAddress.getHealthy()).isFalse();
+    }
+
+    private static RestTemplate mockRestTemplate() {
+        RestTemplate restTemplate = mock(RestTemplate.class);
+        Config config = mock(Config.class);
+        when(config.getValue()).thenReturn(TIMEOUT);
+        when(restTemplate
+                     .getForObject(eq(REST_CONFIG_URL + Config.ConfigName.WORKER_CONNECTION_TIMEOUT), eq(Config.class)))
+                .thenReturn(config);
+        when(restTemplate.getForObject(eq(REST_CONFIG_URL + Config.ConfigName.WORKER_SOCKET_TIMEOUT), eq(Config.class)))
+                .thenReturn(config);
+        when(restTemplate.getForObject(eq(REST_CONFIG_URL + Config.ConfigName.WORKER_CONNECTION_REQUEST_TIMEOUT),
+                                       eq(Config.class))).thenReturn(config);
+        return restTemplate;
     }
 }

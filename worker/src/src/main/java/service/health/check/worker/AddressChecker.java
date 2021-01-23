@@ -7,7 +7,9 @@ import java.net.URISyntaxException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpHead;
+import org.springframework.web.client.RestTemplate;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import static org.apache.http.HttpStatus.SC_OK;
 import service.health.check.messages.AddressToCheck;
@@ -17,7 +19,10 @@ import static service.health.check.worker.util.AddressCheckerUtil.getRequestConf
 import static service.health.check.worker.util.AddressCheckerUtil.instantiateHttpClient;
 
 @Slf4j
+@RequiredArgsConstructor
 public class AddressChecker {
+
+    private final RestTemplate restTemplate;
 
     public CheckedAddress checkAddress(AddressToCheck addressToCheck) {
         return new CheckedAddress(addressToCheck.getHost(), addressToCheck.getPort(),
@@ -29,7 +34,7 @@ public class AddressChecker {
         try {
             URI uri = extractURI(address);
             HttpHead httpHead = new HttpHead(uri);
-            httpHead.setConfig(getRequestConfig());
+            httpHead.setConfig(getRequestConfig(restTemplate));
             HttpResponse execute = httpClient.execute(httpHead);
             int statusCode = execute.getStatusLine().getStatusCode();
             log.debug(String.valueOf(statusCode));

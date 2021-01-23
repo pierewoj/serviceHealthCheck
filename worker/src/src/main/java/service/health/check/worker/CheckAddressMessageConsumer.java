@@ -2,6 +2,8 @@ package service.health.check.worker;
 
 import java.io.IOException;
 
+import org.springframework.web.client.RestTemplate;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.AMQP;
@@ -24,7 +26,8 @@ public class CheckAddressMessageConsumer extends DefaultConsumer {
 
     public CheckAddressMessageConsumer(Channel channel) {
         super(channel);
-        this.addressChecker = new AddressChecker();
+        RestTemplate restTemplate = new RestTemplate();
+        this.addressChecker = new AddressChecker(restTemplate);
         this.mapper = new ObjectMapper();
     }
 
