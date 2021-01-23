@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: server
+spec:
+  template:
+    metadata:
+      name: server-pod
+    spec:
+      containers:
+        - name: server
+          image: gcr.io/pierewoj-gke/server
+          command: ["/app/start.sh"]
+          imagePullPolicy: Always
+      restartPolicy: OnFailure
