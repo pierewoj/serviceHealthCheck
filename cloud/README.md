@@ -3,12 +3,11 @@ This project contains the automation that sets up the service stack in GCP.
 # Requirements
 1. `gcloud` is installed (installation can be done
   via `curl https://sdk.cloud.google.com | bash`)
+1. To configure a project run `gcloud config set project`
 1. `gcloud` is initialized (if it's not then run `gcloud init` and proceed
   with the instructions to log in and setup the project)
-1. Following APIs are enabled (if they are not, you can enable them
-  from the gcloud web ui): `container.googleapis.com`
-1. Ensure that you can push images to the GCP container registry
-  https://cloud.google.com/container-registry/docs/advanced-authentication
+1. `gcloud services enable container.googleapis.com`
+1. `gcloud auth configure-docker`
 
 # How to deploy changes
 1. `export PROJECT_NAME=YOUR_PROJ_NAME`
